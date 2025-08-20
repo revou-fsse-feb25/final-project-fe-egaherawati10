@@ -1,5 +1,7 @@
 export type Role = 'admin' | 'doctor' | 'patient';
 
+export type Specialty = 'general' | 'neurologist' | 'dermatologist';
+
 export interface BaseProfile {
     id: number;
     name: string;
@@ -20,7 +22,7 @@ export interface PatientProfile extends BaseProfile {
 
 export interface DoctorProfile extends BaseProfile {
     role: 'doctor';
-    specialty: string;
+    specialty: Specialty;
     licenseNumber: string;
     dob: string;
 }

@@ -1,97 +1,79 @@
-'use client'
+'use client';
 
-import LoadingSpinner from "@/components/LoadingSpinner";
-import { signIn } from "next-auth/react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
-import { set } from "react-hook-form";
+import Link from "next/link";
+import { mockUsers } from "@/lib/mockUsers";
 
 export default function LoginPage() {
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [error, setError] = useState<string>("");
-    const [loading, setLoading] = useState<boolean>(false);
-    const router = useRouter();
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setLoading(true);
-        setError("");
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
 
-        const res = await signIn('credentials', {
-            email,
-            password,
-            redirect: false,
-        });
+    const user = mockUsers.find(
+      (u) => u.email === email && u.password === password
+    );
 
-        if (res?.error) {
-            setError('Invalid email or password');
-            setLoading(false);
-        } else {
-            router.push('/');
-        }
-    };
+    if (!user) {
+      setError("Invalid email or password");
+      return;
+    }
 
-    return (
-        <main className="flex items-center justify-center min-h-screen p-8">
-        <form
-        onSubmit={handleSubmit} 
-        className="w-full max-w-sm space-y-4">
+    localStorage.setItem("user", JSON.stringify(user));
 
-            <h1 className="text-2xl font-bold text-center">
-                Login
-            </h1>
+    router.push("/profile");
+  };
 
-            <input 
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required 
-            className="w-full border p-2 rounded"
-            />
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <form
+        onSubmit={handleLogin}
+        className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md"
+      >
+        <h1 className="text-2xl font-bold mb-6 text-center text-green-950">
+          EMR Login
+        </h1>
 
-            <input 
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required 
-            className="w-full border p-2 rounded"
-            />
+        {error && (
+          <p className="mb-4 text-red-600 text-center font-medium">{error}</p>
+        )}
 
-            <div className="flex justify-between gap-2">
-            <button
-                type="reset"
-                onClick={() => {
-                setEmail("");
-                setPassword("");
-                setError("");
-            }}
-            className="bg-white text-green-950 hover:bg-green-800 px-4 py-2 rounded-md">
-                Reset
-            </button>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          className="w-full px-4 py-2 mb-6 border border-gray-300 rounded-md"
+        />
+        
+        <button
+          type="submit"
+          className="w-full bg-green-950 text-white py-2 rounded-md hover:bg-green-800"
+        >
+          Login
+        </button>
 
-            <button
-            type="submit"
-            disabled={loading}
-            className="bg-white text-green-950 hover:bg-green-800 px-4 py-2 rounded-md"
-            >
-                {loading ? <LoadingSpinner /> : "Login"}
-            </button>
-            </div>
-
-            {error && <p className="text-red-900">{error}</p>}
-
-            {/* <p>
-                <a href="/forgot-password">Forgot password?</a>
-            </p> */}
-
-            <p>
-                Don't have an account? <a href="/register" className="text-green-950 underline">Register</a>
-            </p>
-
-        </form>
-        </main>
-    )
+        {/* Register link */}
+        <p className="mt-4 text-center text-sm text-gray-600">
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="text-green-950 font-medium hover:underline">
+            Register
+          </Link>
+        </p>
+      </form>
+    </div>
+  );
 }

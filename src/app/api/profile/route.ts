@@ -16,7 +16,7 @@ const mockProfiles: Record<string, Profile> = {
         name: 'Her Doctor', 
         email: 'doctor@mail.com', 
         role: 'doctor',
-        specialty: 'General',
+        specialty: 'general',
         licenseNumber: '123456789',
         dob: '1999-09-09'
     },

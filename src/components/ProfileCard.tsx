@@ -6,7 +6,7 @@ export default function ProfileCard({ profile }: { profile: Profile}) {
     return (
         <div className="w-full max-w-lg p-6 rounded-lg bg-gray-100 shadow-md space-y-2">
             <h1 className="text-2xl font-semibold text-green-950">{profile.name}</h1>
-            <p className="text-sm text-gray-950">Email: {profile.email}</p>
+            <p className="text-sm text-gray-950"><strong>Email:</strong> {profile.email}</p>
 
             {profile.role === 'admin' && (
                 <p><strong>Role:</strong> {profile.role}</p>

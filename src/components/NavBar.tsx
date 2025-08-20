@@ -1,123 +1,70 @@
-'use client';
-import { signOut, useSession } from "next-auth/react";
+"use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+import { menuItem } from "@/lib/menuItems";
 
-interface NavLinkProps {
-    href: string;
-    children: React.ReactNode;
-}
+export default function Navbar() {
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
-function NavLink({ href, children }: NavLinkProps) {
-    const pathname = usePathname();
-    const isActive = pathname === href;
-
-    return (
-        <Link href={href}
-        className={`text-white hover:text-green-900 transition-colors
-        ${isActive ? 'underline' : ''            
-        }`}
-        >
-            {children}
-        </Link>
-    );
-}
-
-export default function NavBar() {
-    const { data: session } = useSession();
-    const role = session?.user?.role as 'admin' | 'doctor' | 'patient' | undefined;
-    const roleDashboard = role ? `/dashboard/${role}` : '/login';
-    const displayName = 
-    session?.user?.name?.split(' ')[0] ?? (role ? 'Profile' : 'Guest');
-
-    return (
-        <nav className="flex items-center justify-between p-4 bg-green-950">
-            <Link href="/" className="text-xl font-bold text-white">
+  return (
+    <nav className="bg-gradient-to-r from-green-50 to-white text-green-900 shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo / Brand */}
+          <Link href="/" className="text-xl font-bold tracking-wide">
             Her Hospital
+          </Link>
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex space-x-6">
+            {menuItem.map((menu) => (
+              <Link
+                key={menu.id}
+                href={menu.path}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                  pathname === menu.path
+                    ? "bg-white text-green-900"
+                    : "hover:bg-green-800 hover:text-white"
+                }`}
+              >
+                {menu.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Dropdown */}
+      {isOpen && (
+        <div className="md:hidden bg-green-600 px-4 pt-2 pb-3 space-y-2">
+          {menuItem.map((menu) => (
+            <Link
+              key={menu.id}
+              href={menu.path}
+              className={`block px-3 py-2 rounded-md text-base font-medium ${
+                pathname === menu.path
+                  ? "bg-white text-green-700"
+                  : "hover:bg-green-500"
+              }`}
+              onClick={() => setIsOpen(false)}
+            >
+              {menu.name}
             </Link>
-
-            <div>
-                {role && (
-                    <NavLink href={roleDashboard}>
-                        {displayName}
-                    </NavLink>
-                )}
-
-                {session ? (
-                    <button
-                    onClick={() => signOut({ callbackUrl: 'login' })}
-                    className="text-white hover:text-green-900 transition-colors">
-                        Logout
-                    </button>
-                ) : (
-                <NavLink href="/login">
-                    Login
-                </NavLink>)}
-            </div>
-        </nav>
-    );
+          ))}
+        </div>
+      )}
+    </nav>
+  );
 }
-
-// 'use client';
-// import { Session } from "next-auth";
-// import { signOut } from "next-auth/react";
-// import Link from "next/link";
-// import { usePathname } from "next/navigation";
-
-// interface NavBarProps {
-//     session: Session | null;
-// }
-
-// interface NavLinkProps {
-//     href: string;
-//     children: React.ReactNode;
-// }
-
-// function NavLink({ href, children }: NavLinkProps) {
-//     const pathname = usePathname();
-//     const isActive = pathname === href;
-
-//     return (
-//         <Link
-//             href={href}
-//             className={`text-white hover:text-gray-400 transition-colors ${
-//         isActive ? "text-gray-400" : ""
-//         }`}
-//         >
-//             {children}
-//         </Link>
-//     )
-// }
-
-// export function NavBar({ session }:NavBarProps) {
-//     const isAdmin = session?.user?.role === "admin";
-//     const displayName = session?.user?.name?.split(" ")[0] || "Profile";
-//     return (
-//         <nav>
-//             <div>
-
-//                 <Link href="/">
-//                 <span>
-//                     Her Hospital
-//                 </span>
-//                 </Link>
-
-//                 {/* <div>
-//                     <NavLink href="/">
-//                         Home
-//                     </NavLink>
-//                 </div> */}
-
-//                 <NavLink href={isAdmin ? "/dashboard/admin" : "/dashboard/doctor"}>
-//                     {displayName}
-//                 </NavLink>
-
-//                 <button
-//                 onClick={() => signOut({ callbackUrl: "/login" })}>
-//                     Logout
-//                 </button>
-//             </div>
-//         </nav>
-//     )
-// }
