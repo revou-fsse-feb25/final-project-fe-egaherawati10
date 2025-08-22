@@ -1,12 +1,10 @@
-export default async function Home() {
+"use client";
 
+import HomeClient from "./HomeClient";
+
+export default function HomePage() {
+ 
   return (
-    <>
-    <main>
-      <div>
-        <h1>Home</h1>
-      </div>
-    </main>
-    </>
-  )
+    <HomeClient />
+  );
 }

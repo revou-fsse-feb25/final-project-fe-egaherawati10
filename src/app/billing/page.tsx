@@ -1,44 +1,35 @@
 "use client";
+import { useEMRStore } from "@/lib/store";
 
-import Navbar from "@/components/NavBar";
-import PatientPayment from "@/components/PatientPayment";
-import PaymentDetails from "@/components/PaymentDetails";
-import PaymentMethod from "@/components/PaymentMethod";
-import { mockPatientWithUser } from "@/lib/mockPatientWithUser";
-import { payments } from "@/lib/mockPayment";
-import { paymentItems } from "@/lib/mockPaymentItem";
+export default function BillingPage({ params }: { params: { id: string } }) {
+  const pid = Number(params.id);
+  const { payments, addPayment } = useEMRStore();
 
-export default function BillingPage() {
-  const patient = mockPatientWithUser[0];
-  
+  const patientPayments = payments.filter((p) => p.patientId === pid);
+
   return (
-    <div className="min-h-screen bg-gradient-to-r from-green-50 to-white text-gray-900">
-      {/* Header */}
-      <header className="sticky top-0 z-50">
-        <Navbar />
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 py-8 space-y-6">
-        {/* Patient Info */}
-        <section>
-          <PatientPayment />
-        </section>
-
-        {/* Payment Items Table */}
-        <section>
-          <PaymentDetails
-            patientId={patient.id}
-            payments={payments}
-            paymentItems={paymentItems}
-          />
-        </section>
-
-        {/* Payment Method */}
-        <section>
-          <PaymentMethod />
-        </section>
-      </main>
+    <div>
+      <h2 className="text-lg font-semibold text-green-900 mb-4">Billing</h2>
+      <button
+        className="bg-green-900 text-white px-4 py-2 rounded"
+        onClick={() =>
+          addPayment({
+            id: Date.now(),
+            patientId: pid,
+            totalAmount: 200_000,
+            method: "cash",
+          })
+        }
+      >
+        + Add Payment
+      </button>
+      <ul className="mt-4 space-y-2">
+        {patientPayments.map((pay) => (
+          <li key={pay.id} className="border p-2 rounded">
+            Rp {pay.totalAmount.toLocaleString()} – {pay.method}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { mockUsers } from "@/lib/mockUsers";
@@ -25,8 +25,15 @@ export default function LoginPage() {
 
     localStorage.setItem("user", JSON.stringify(user));
 
-    router.push("/profile");
+    router.push("/");
   };
+
+    useEffect(() => {
+    const existingUser = localStorage.getItem("user");
+    if (existingUser) {
+      router.replace("/");
+    } 
+  }, [router]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
